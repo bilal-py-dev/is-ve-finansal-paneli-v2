@@ -1,0 +1,27 @@
+* { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
+body { background-color: #f1f5f9; margin: 0; color: #1e293b; }
+.navbar { background-color: #0f172a; color: white; padding: 16px 32px; font-size: 20px; font-weight: bold; }
+.container { max-width: 1150px; margin: 24px auto; padding: 0 16px; }
+.cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 20px; }
+.card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
+.card-green { border-left: 5px solid #16a34a; }
+.card-red { border-left: 5px solid #dc2626; }
+.card-blue { border-left: 5px solid #2563eb; }
+.card small { color: #64748b; font-weight: bold; font-size: 12px; }
+.card h2 { margin: 8px 0 0; font-size: 26px; }
+.text-green { color: #16a34a; }
+.text-red { color: #dc2626; }
+.ai-header { display: flex; justify-content: space-between; align-items: center; }
+.btn { padding: 10px 18px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px; }
+.btn-primary { background-color: #2563eb; color: white; }
+.btn-dark { background-color: #0f172a; color: white; width: 100%; padding: 11px; margin-top: 8px; }
+.btn-del { background: #fee2e2; color: #dc2626; padding: 5px 9px; border-radius: 6px; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.form-row { display: flex; gap: 8px; margin-bottom: 8px; }
+input, select { width: 100%; padding: 9px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; }
+table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 14px; }
+th { text-align: left; color: #64748b; border-bottom: 2px solid #e2e8f0; padding: 8px; }
+td { padding: 9px 8px; border-bottom: 1px solid #f1f5f9; }
+.badge-gelir { background: #dcfce7; color: #16a34a; padding: 3px 8px; border-radius: 6px; font-weight: bold; font-size: 12px; }
+.badge-gider { background: #fee2e2; color: #dc2626; padding: 3px 8px; border-radius: 6px; font-weight: bold; font-size: 12px; }
+.ai-result { background: #f8fafc; padding: 14px; border-radius: 8px; margin-top: 12px; border-left: 4px solid #2563eb; white-space: pre-line; }
