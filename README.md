@@ -1,14 +1,8 @@
-# 📊 Yapay Zeka Destekli İş ve Finansal Yönetim Paneli
+# Is ve Finansal Yonetim Paneli (AI Destekli)
 
-Freelancerlar ve işletmeler için geliştirilmiş; müşteri takibi, otomatik kasa yönetimi ve **Google Gemini AI** tabanlı finansal analiz sunan modern web paneli.
+FastAPI, SQLite ve Google Gemini AI tabanli is, musteri ve finans yonetim paneli.
 
-## 🚀 Öne Çıkan Özellikler
-- **Müşteri ve Proje Takibi:** Devam eden, bekleyen ve tamamlanan işleri anlık yönetme.
-- **Otomatik Gelir Entegrasyonu:** İşi "Tamamlandı" durumuna getirdiğinizde proje tutarını otomatik olarak kasaya ve gelirlere ekleme.
-- **Yapay Zeka Finans Danışmanı:** Gemini AI ile mevcut kasa ve iş durumunu tek tıkla analiz edip stratejik öneriler alma.
-
-## 🛠️ Kullanılan Teknolojiler
-- **Backend:** Python, FastAPI, Uvicorn
-- **Veritabanı:** SQLite3
-- **Yapay Zeka:** Google GenAI SDK (`gemini-2.5-flash`)
-- **Frontend:** HTML5, CSS3, Jinja2
+## Kurulum
+1. pip install -r requirements.txt
+2. .env dosyasina GEMINI_API_KEY, ADMIN_KULLANICI ve ADMIN_SIFRE ekleyin.
+3. py -m uvicorn main:app --reload

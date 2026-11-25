@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Hizmet Teklifi - #{{ m.id }}</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #e2e8f0; padding: 30px; color: #0f172a; }
+        .toolbar { max-width: 750px; margin: 0 auto 16px; display: flex; justify-content: space-between; }
+        .btn { padding: 10px 16px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; text-decoration: none; color: white; }
+        .sheet { max-width: 750px; margin: 0 auto; background: white; padding: 40px; border-radius: 12px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th { background: #0f172a; color: white; text-align: left; padding: 10px; }
+        td { padding: 12px 10px; border-bottom: 1px solid #cbd5e1; }
+        @media print { .toolbar { display: none; } body { background: white; padding: 0; } }
+    </style>
+</head>
+<body>
+    <div class="toolbar">
+        <a href="/" class="btn" style="background:#334155;">← Panele Dön</a>
+        <button onclick="window.print()" class="btn" style="background:#2563eb;">🖨️ Yazdır / PDF Kaydet</button>
+    </div>
+    <div class="sheet">
+        <h2>HİZMET TEKLİFİ & MAKBUZ (#TEK-{{ "%04d"|format(m.id) }})</h2>
+        <p><strong>Müşteri:</strong> {{ m.ad_soyad }} | <strong>Durum:</strong> {{ m.durum }} | <strong>Teslim:</strong> {{ m.teslim_tarihi or '-' }}</p>
+        <table>
+            <thead><tr><th>Hizmet / Proje</th><th style="text-align:right;">Tutar</th></tr></thead>
+            <tbody><tr><td>{{ m.proje_adi }}</td><td style="text-align:right;"><strong>{{ "%.2f"|format(m.ucret) }} ₺</strong></td></tr></tbody>
+        </table>
+        <h3 style="text-align:right; color:#16a34a; margin-top:24px;">TOPLAM: {{ "%.2f"|format(m.ucret) }} ₺</h3>
+    </div>
+</body>
+</html>
+

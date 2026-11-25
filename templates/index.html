@@ -2,73 +2,262 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>İş ve Finansal Yönetim Paneli</title>
     <link rel="stylesheet" href="/static/style.css">
+    <script src="https://jsdelivr.net"></script>
 </head>
 <body>
-    <div class="navbar" style="display: flex; justify-content: space-between; align-items: center;">
-        <span>📊 İş ve Finansal Yönetim Paneli</span>
-        <div>
-            <a href="/excel-rapor" style="background: #16a34a; color: white; padding: 8px 14px; border-radius: 6px; text-decoration: none; font-size: 14px; font-weight: bold;">📥 Excel Rapor İndir</a>
-            <a href="/logout" style="background: #dc2626; color: white; padding: 8px 14px; border-radius: 6px; text-decoration: none; font-size: 14px; font-weight: bold; margin-left: 8px;">🚪 Çıkış</a>
+    <div class="navbar">
+        <div class="nav-inner">
+            <span>📊 İş ve Finansal Yönetim Paneli</span>
+            <div class="nav-actions">
+                <a href="/excel-rapor" class="btn btn-excel">📥 Rapor İndir (CSV)</a>
+                <a href="/logout" class="btn btn-logout">🚪 Çıkış</a>
+            </div>
         </div>
     </div>
 
-<div class="container">
-    <div class="cards">
-        <div class="card card-green"><small>TOPLAM GELİR</small><h2 class="text-green">+{{ "%.2f"|format(toplam_gelir) }} ₺</h2></div>
-        <div class="card card-red"><small>TOPLAM GİDER</small><h2 class="text-red">-{{ "%.2f"|format(toplam_gider) }} ₺</h2></div>
-        <div class="card card-blue"><small>NET KASA / BAKİYE</small><h2>{{ "%.2f"|format(net_bakiye) }} ₺</h2></div>
-    </div>
-    <div class="card" style="margin-bottom: 20px;">
-        <div class="ai-header">
-            <div><h3 style="margin:0 0 4px;">🤖 Yapay Zeka Finansal Analiz Asistanı</h3><small>Mevcut müşteri işlerini ve kasa dengesini yapay zeka ile anında yorumla.</small></div>
-            <form action="/ai-analiz" method="post"><button type="submit" class="btn btn-primary">✨ AI Analizi Başlat</button></form>
+    <div class="container">
+        <div class="cards-4">
+            <div class="card card-green">
+                <small>TOPLAM GELİR</small>
+                <h2 class="text-green">+{{ "%.2f"|format(toplam_gelir) }} ₺</h2>
+            </div>
+            <div class="card card-red">
+                <small>TOPLAM GİDER</small>
+                <h2 class="text-red">-{{ "%.2f"|format(toplam_gider) }} ₺</h2>
+            </div>
+            <div class="card card-blue">
+                <small>NET KASA / BAKİYE</small>
+                <h2>{{ "%.2f"|format(net_bakiye) }} ₺</h2>
+            </div>
+            <div class="card card-amber">
+                <small>BEKLEYEN ALACAK ({{ aktif_proje }} İŞ)</small>
+                <h2 class="text-amber">{{ "%.2f"|format(bekleyen_alacak) }} ₺</h2>
+            </div>
         </div>
-        {% if ai_analiz %}<div class="ai-result">{{ ai_analiz }}</div>{% endif %}
-    </div>
-    <div class="grid-2">
-        <div class="card">
-            <h3 style="margin-top:0;">💼 Yeni İş / Müşteri Ekle</h3>
-            <form action="/musteri-ekle" method="post">
-                <div class="form-row"><input type="text" name="ad_soyad" placeholder="Müşteri Adı Soyadı" required><input type="text" name="proje_adi" placeholder="Proje / İş Başlığı" required></div>
-                <div class="form-row"><input type="number" step="0.01" name="ucret" placeholder="Ücret (₺)" required><select name="durum"><option value="Devam Ediyor">Devam Ediyor</option><option value="Tamamlandı">Tamamlandı</option><option value="Beklemede">Beklemede</option></select></div>
-                <button type="submit" class="btn btn-dark">Müşteri Kaydet</button>
-            </form>
-            <table>
-                <thead><tr><th>Müşteri</th><th>Proje</th><th>Ücret</th><th>Durum</th><th>Sil</th></tr></thead>
-                <tbody>
-                    {% for m in musteriler %}
-                    <tr>
-                        <td><strong>{{ m.ad_soyad }}</strong></td><td>{{ m.proje_adi }}</td><td>{{ "%.2f"|format(m.ucret) }} ₺</td>
-                        <td><form action="/musteri-durum/{{ m.id }}" method="post"><select name="durum" onchange="this.form.submit()" style="padding:4px; font-weight:bold;"><option value="Devam Ediyor" {% if m.durum == 'Devam Ediyor' %}selected{% endif %}>Devam Ediyor</option><option value="Tamamlandı" {% if m.durum == 'Tamamlandı' %}selected{% endif %}>Tamamlandı</option><option value="Beklemede" {% if m.durum == 'Beklemede' %}selected{% endif %}>Beklemede</option></select></form></td>
-                        <td><form action="/musteri-sil/{{ m.id }}" method="post"><button type="submit" class="btn btn-del">🗑</button></form></td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+
+        <div class="grid-ai-chart">
+            <div class="card">
+                <div class="ai-header">
+                    <div>
+                        <h3 style="margin:0;">🤖 Yapay Zeka Finansal Danışman</h3>
+                        <small style="color:#64748b;">Genel analiz iste veya kasana özel bir soru sor.</small>
+                    </div>
+                </div>
+                <form action="/ai-analiz" method="post" class="ai-form">
+                    <input type="text" name="ozel_soru" value="{{ sorulan_soru }}" placeholder="Örn: Bu ayki kâr durumum nasıl? (Boş bırakırsan genel analiz yapar)">
+                    <button type="submit" class="btn btn-primary">✨ AI Analiz</button>
+                </form>
+                {% if ai_analiz %}
+                <div class="ai-result">{{ ai_analiz }}</div>
+                {% endif %}
+            </div>
+
+            <div class="card chart-card">
+                <h3 style="margin:0 0 14px;">📈 Kasa & Alacak Dağılımı</h3>
+                {% set toplam_hacim = (toplam_gelir + toplam_gider + bekleyen_alacak) or 1 %}
+                <div style="margin-bottom:12px;">
+                    <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:4px;">
+                        <span><strong>Gelir</strong></span>
+                        <span class="text-green"><strong>{{ "%.2f"|format(toplam_gelir) }} ₺</strong></span>
+                    </div>
+                    <div style="background:#e2e8f0; border-radius:6px; height:10px; overflow:hidden;">
+                        <div style="background:#16a34a; height:100%; width:{{ (toplam_gelir / toplam_hacim * 100)|round(1) }}%;"></div>
+                    </div>
+                </div>
+                <div style="margin-bottom:12px;">
+                    <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:4px;">
+                        <span><strong>Gider</strong></span>
+                        <span class="text-red"><strong>{{ "%.2f"|format(toplam_gider) }} ₺</strong></span>
+                    </div>
+                    <div style="background:#e2e8f0; border-radius:6px; height:10px; overflow:hidden;">
+                        <div style="background:#dc2626; height:100%; width:{{ (toplam_gider / toplam_hacim * 100)|round(1) }}%;"></div>
+                    </div>
+                </div>
+                <div>
+                    <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:4px;">
+                        <span><strong>Bekleyen Alacak</strong></span>
+                        <span class="text-amber"><strong>{{ "%.2f"|format(bekleyen_alacak) }} ₺</strong></span>
+                    </div>
+                    <div style="background:#e2e8f0; border-radius:6px; height:10px; overflow:hidden;">
+                        <div style="background:#d97706; height:100%; width:{{ (bekleyen_alacak / toplam_hacim * 100)|round(1) }}%;"></div>
+                    </div>
+                </div>
+            </div>
+
         </div>
-        <div class="card">
-            <h3 style="margin-top:0;">💰 Gelir / Gider Hareketi Ekle</h3>
-            <form action="/finans-ekle" method="post">
-                <div class="form-row"><select name="tur"><option value="Gelir">Gelir (+)</option><option value="Gider">Gider (-)</option></select><input type="number" step="0.01" name="tutar" placeholder="Tutar (₺)" required></div>
-                <input type="text" name="aciklama" placeholder="Açıklama" required>
-                <button type="submit" class="btn btn-dark">Hareketi Kaydet</button>
-            </form>
-            <table>
-                <thead><tr><th>Tür</th><th>Açıklama</th><th>Tutar</th><th>Sil</th></tr></thead>
-                <tbody>
-                    {% for f in finanslar %}
-                    <tr>
-                        <td>{% if f.tur == 'Gelir' %}<span class="badge-gelir">Gelir</span>{% else %}<span class="badge-gider">Gider</span>{% endif %}</td>
-                        <td>{{ f.aciklama }}</td><td><strong>{{ "%.2f"|format(f.tutar) }} ₺</strong></td>
-                        <td><form action="/finans-sil/{{ f.id }}" method="post"><button type="submit" class="btn btn-del">🗑</button></form></td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        <div class="grid-2">
+            <!-- Sol Kolon: Müşteri & Proje Yönetimi -->
+            <div class="card">
+                <h3 style="margin-top:0;">💼 Yeni İş / Müşteri Ekle</h3>
+                <form action="/musteri-ekle" method="post">
+                    <div class="form-row">
+                        <input type="text" name="ad_soyad" placeholder="Müşteri Adı / Firma" required>
+                        <input type="text" name="proje_adi" placeholder="Proje / Hizmet Adı" required>
+                    </div>
+                    <div class="form-row">
+                        <input type="number" step="0.01" name="ucret" placeholder="Ücret (₺)" required>
+                        <input type="date" name="teslim_tarihi" title="Teslim Tarihi">
+                        <select name="durum">
+                            <option value="Devam Ediyor">Devam Ediyor</option>
+                            <option value="Tamamlandı">Tamamlandı</option>
+                            <option value="Beklemede">Beklemede</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-dark">+ Müşteri & İş Kaydet</button>
+                </form>
+
+                <div class="filter-bar">
+                    <input type="text" id="musteriAra" onkeyup="tabloFiltrele()" placeholder="🔍 Müşteri veya proje ara...">
+                    <select id="durumFiltre" onchange="tabloFiltrele()" style="max-width:155px;">
+                        <option value="TUMU">Tüm Durumlar</option>
+                        <option value="Devam Ediyor">Devam Ediyor</option>
+                        <option value="Tamamlandı">Tamamlandı</option>
+                        <option value="Beklemede">Beklemede</option>
+                    </select>
+                </div>
+
+                <table id="musteriTablo">
+                    <thead>
+                        <tr>
+                            <th>Müşteri & Proje</th>
+                            <th>Ücret</th>
+                            <th>Teslim</th>
+                            <th>Durum</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for m in musteriler %}
+                        <tr data-durum="{{ m.durum }}">
+                            <td>
+                                <strong>{{ m.ad_soyad }}</strong><br>
+                                <small style="color:#64748b;">{{ m.proje_adi }}</small>
+                            </td>
+                            <td><strong>{{ "%.2f"|format(m.ucret) }} ₺</strong></td>
+                            <td><small>{{ m.teslim_tarihi or '-' }}</small></td>
+                            <td>
+                                <form action="/musteri-durum/{{ m.id }}" method="post" style="margin:0;">
+                                    <select name="durum" onchange="this.form.submit()" class="status-select">
+                                        <option value="Devam Ediyor" {% if m.durum == 'Devam Ediyor' %}selected{% endif %}>Devam Ediyor</option>
+                                        <option value="Tamamlandı" {% if m.durum == 'Tamamlandı' %}selected{% endif %}>Tamamlandı</option>
+                                        <option value="Beklemede" {% if m.durum == 'Beklemede' %}selected{% endif %}>Beklemede</option>
+                                    </select>
+                                </form>
+                            </td>
+<td style="display:flex; gap:6px; align-items:center;">
+    <a href="/teklif/{{ m.id }}" class="btn" style="background:#dbeafe; color:#1d4ed8; padding:5px 9px; border-radius:6px;" title="Teklif Belgesi">📄</a>
+    <form action="/musteri-sil/{{ m.id }}" method="post" style="margin:0;">
+        <button type="submit" class="btn btn-del" title="Sil">🗑</button>
+    </form>
+</td>
+
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Sağ Kolon: Gelir / Gider Kasa Hareketleri -->
+            <div class="card">
+                <h3 style="margin-top:0;">💰 Gelir / Gider Hareketi Ekle</h3>
+                <form action="/finans-ekle" method="post">
+                    <div class="form-row">
+                        <select name="tur" style="max-width:130px;">
+                            <option value="Gelir">Gelir (+)</option>
+                            <option value="Gider">Gider (-)</option>
+                        </select>
+                        <input type="text" name="aciklama" placeholder="Açıklama (Örn: Sunucu Kirası, Bot Satışı)" required>
+                    </div>
+                    <div class="form-row">
+                        <input type="number" step="0.01" name="tutar" placeholder="Tutar (₺)" required>
+                    </div>
+                    <button type="submit" class="btn btn-dark">+ Kasa Hareketi Kaydet</button>
+                </form>
+
+                <div class="filter-bar">
+                    <input type="text" id="finansAra" onkeyup="finansFiltrele()" placeholder="🔍 Kasa hareketlerinde ara...">
+                </div>
+
+                <table id="finansTablo">
+                    <thead>
+                        <tr>
+                            <th>Tür</th>
+                            <th>Açıklama</th>
+                            <th>Tutar</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for f in finanslar %}
+                        <tr>
+                            <td>
+                                {% if f.tur == 'Gelir' %}
+                                    <span class="badge-gelir">+ Gelir</span>
+                                {% else %}
+                                    <span class="badge-gider">- Gider</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {{ f.aciklama }}<br>
+                                <small style="color:#94a3b8;">{{ f.tarih or '' }}</small>
+                            </td>
+                            <td><strong>{{ "%.2f"|format(f.tutar) }} ₺</strong></td>
+                            <td>
+                                <form action="/finans-sil/{{ f.id }}" method="post" style="margin:0;">
+                                    <button type="submit" class="btn btn-del" title="Sil">🗑</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
-</div>
+
+    <script>
+        function tabloFiltrele() {
+            const arama = document.getElementById("musteriAra").value.toLowerCase();
+            const durum = document.getElementById("durumFiltre").value;
+            const satirlar = document.querySelectorAll("#musteriTablo tbody tr");
+            satirlar.forEach(tr => {
+                const metin = tr.innerText.toLowerCase();
+                const satirDurum = tr.getAttribute("data-durum");
+                const aramaUygun = metin.includes(arama);
+                const durumUygun = (durum === "TUMU" || satirDurum === durum);
+                tr.style.display = (aramaUygun && durumUygun) ? "" : "none";
+            });
+        }
+
+        function finansFiltrele() {
+            const arama = document.getElementById("finansAra").value.toLowerCase();
+            const satirlar = document.querySelectorAll("#finansTablo tbody tr");
+            satirlar.forEach(tr => {
+                tr.style.display = tr.innerText.toLowerCase().includes(arama) ? "" : "none";
+            });
+        }
+
+        const ctx = document.getElementById('finansGrafik').getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Toplam Gelir', 'Toplam Gider', 'Bekleyen Alacak'],
+                datasets: [{
+                    data: [{{ toplam_gelir }}, {{ toplam_gider }}, {{ bekleyen_alacak }}],
+                    backgroundColor: ['#16a34a', '#dc2626', '#d97706'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } } }
+            }
+        });
+    </script>
 </body>
 </html>
+        
